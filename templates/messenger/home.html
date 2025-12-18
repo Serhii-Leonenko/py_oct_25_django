@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+  <p>Welcome to the messenger app!</p>
+  <p>
+    <a href="{% url 'messenger:home' %}">Link to Home</a>
+  </p>
+  <p>
+    <a href="{% url 'messenger:message-list' %}">Number of messages: {{ num_messages }}</a>
+  </p>
+  <br>
+  {% if last_viewed_message %}
+  <p>Last visited message: ID: {{ last_viewed_message.id }} Text: {{ last_viewed_message.text }}
+  </p>
+  {% endif %}
+{% endblock %}

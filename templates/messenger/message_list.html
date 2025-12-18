@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Message List</h1>
+  <br>
+  <ul>
+    {% for message in message_list %}
+      <li>{{ message.text }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
