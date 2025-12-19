@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -73,3 +74,24 @@ class ActivateView(View):
                 return redirect("users:login")
 
         return render(request, "registration/activation_invalid.html")
+
+
+class UserListView(generic.ListView):
+    model = User
+
+
+class UserListPartialView(generic.ListView):
+    template_name = "users/partials/user_list_partial.html"
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+
+        if search := self.request.GET.get("search"):
+            queryset = queryset.filter(
+                Q(username__icontains=search)
+                | Q(email__icontains=search)
+                | Q(first_name__icontains=search)
+                | Q(last_name__icontains=search)
+            )
+
+        return queryset
