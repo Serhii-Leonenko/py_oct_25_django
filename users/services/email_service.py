@@ -11,7 +11,7 @@ class EmailService:
     def send_activation_email(
         cls, user: User, schema: str, domain: str, token: str
     ) -> None:
-        uid = urlsafe_base64_encode(user.pk.to_bytes())
+        uid = urlsafe_base64_encode(str(user.pk).encode())
 
         url = f"{schema}://{domain}/users/activate/{uid}/{token}"
 

@@ -1,14 +1,20 @@
 import logging
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
+from django.http import HttpRequest
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from django.utils.http import urlsafe_base64_decode
 from django.views import generic, View
 
 from users.forms import SignUpForm
 from users.services.email_service import EmailService
 from users.services.token_service import user_token_activation
+
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +24,7 @@ class SignUpView(generic.FormView):
     template_name = "registration/sign_up.html"
     success_url = reverse_lazy("users:login")
 
-    def form_valid(self, form):
+    def form_valid(self, form: SignUpForm):
         with transaction.atomic():
             form.instance.is_active = False
             user = form.save()
@@ -43,6 +49,27 @@ class SignUpView(generic.FormView):
 
 
 class ActivateView(View):
-    def get(self, request, uid, token):
-        # TODO implement activation logic
-        ...
+    def get(self, request: HttpRequest, uid: str, token: str):
+        try:
+            uid = urlsafe_base64_decode(uid).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None:
+            if user.is_active:
+                messages.info(request, "Your account is already activated.")
+
+                return redirect("users:login")
+
+            if user_token_activation.check_token(user, token):
+                user.is_active = True
+                user.save()
+
+                messages.success(
+                    request,
+                    "Thank you for confirming your email. You can now login to your account.",
+                )
+                return redirect("users:login")
+
+        return render(request, "registration/activation_invalid.html")
