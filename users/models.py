@@ -1,3 +1,4 @@
+from cloudinary.models import CloudinaryField
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -16,6 +17,9 @@ class Profile(models.Model):
     bio = models.TextField(
         blank=True, null=True
     )
+    avatar = CloudinaryField(
+        "avatar", blank=True, null=True
+    )
 
     def __str__(self):
-        return self.user
+        return self.user.username

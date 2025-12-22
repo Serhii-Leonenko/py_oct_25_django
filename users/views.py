@@ -84,7 +84,7 @@ class UserListPartialView(generic.ListView):
     template_name = "users/partials/user_list_partial.html"
 
     def get_queryset(self):
-        queryset = User.objects.all()
+        queryset = User.objects.select_related("profile")
 
         if search := self.request.GET.get("search"):
             queryset = queryset.filter(

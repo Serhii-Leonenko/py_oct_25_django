@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
 
+import cloudinary
+import cloudinary.api
+import cloudinary.uploader
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third-party apps
     "debug_toolbar",
+    "cloudinary",
     # Local apps
     "users",
     "messenger",
@@ -119,5 +124,11 @@ EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", True)
 
-
 LOGIN_REDIRECT_URL = "messenger:home"
+
+# CLOUDINARY
+cloudinary.config(
+    cloud_name=os.environ["CLOUD_NAME"],
+    api_key=os.environ["API_KEY"],
+    api_secret=os.environ["API_SECRET"],
+)

@@ -1,6 +1,11 @@
 {% for user in user_list %}
   <tr>
     <td>{{ user.id }}</td>
+    <td>
+      {% if user.profile.avatar %}
+        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}" width="50" height="50">
+      {% endif %}
+    </td>
     <td>{{ user.username }}</td>
     <td>{{ user.first_name }}</td>
     <td>{{ user.last_name }}</td>
