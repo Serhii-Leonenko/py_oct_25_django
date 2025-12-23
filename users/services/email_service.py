@@ -1,3 +1,5 @@
+import threading
+
 from django.contrib.auth import get_user_model
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -7,6 +9,15 @@ User = get_user_model()
 
 
 class EmailService:
+    @staticmethod
+    def send_async_email(email: EmailMessage) -> None:
+        thread = threading.Thread(target=email.send)
+        thread.start()
+
+    @staticmethod
+    def send_sync_email(email: EmailMessage) -> None:
+        email.send()
+
     @classmethod
     def send_activation_email(
         cls, user: User, schema: str, domain: str, token: str
@@ -26,4 +37,4 @@ class EmailService:
         )
         email.content_subtype = "html"
 
-        email.send()
+        cls.send_async_email(email)
